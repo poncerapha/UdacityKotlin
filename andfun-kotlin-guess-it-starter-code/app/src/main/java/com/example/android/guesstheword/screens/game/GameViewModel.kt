@@ -1,22 +1,33 @@
 package com.example.android.guesstheword.screens.game
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
 
-    val word = MutableLiveData<String>()
 
-    val score = MutableLiveData<Int>()
+    private val _word = MutableLiveData<String>()
+    val word: LiveData<String>
+        get() = _word
+
+    private val _score = MutableLiveData<Int>()
+    val score: LiveData<Int>
+        get() = _score
+
+    private val _eventGameFinish = MutableLiveData<Boolean>()
+    val eventGameFinish: LiveData<Boolean>
+        get() = _eventGameFinish
 
     private lateinit var wordList: MutableList<String>
 
     init {
+        _eventGameFinish.value = false
         Log.i("GameViewModel", "GameViewModel created!")
         resetList()
         nextWord()
-        score.value = 0
+        _score.value = 0
     }
 
     private fun resetList() {
@@ -48,24 +59,28 @@ class GameViewModel : ViewModel() {
 
     private fun nextWord() {
         if (wordList.isEmpty()) {
-//            gameFinished()
+            _eventGameFinish.value = true
         } else {
-            word.value = wordList.removeAt(0)
+            _word.value = wordList.removeAt(0)
         }
     }
 
     fun onSkip() {
-        score.value = (score.value)?.minus(1)
+        _score.value = (score.value)?.minus(1)
         nextWord()
     }
 
     fun onCorrect() {
-        score.value = (score.value)?.plus(1)
+        _score.value = (score.value)?.plus(1)
         nextWord()
     }
 
     override fun onCleared() {
         super.onCleared()
         Log.i("GameViewModel", "GameViewModel destroyed!")
+    }
+
+    fun onGameFinishComplete(){
+        _eventGameFinish.value = false
     }
 }

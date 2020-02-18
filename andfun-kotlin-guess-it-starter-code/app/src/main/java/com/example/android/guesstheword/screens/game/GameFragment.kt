@@ -42,7 +42,6 @@ class GameFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.game_fragment,
@@ -67,6 +66,13 @@ class GameFragment : Fragment() {
 
         viewModel.word.observe(this, Observer { newWord ->
             binding.wordText.text = newWord
+        })
+
+        viewModel.eventGameFinish.observe(this, Observer { hasFinished ->
+            if(hasFinished){
+                gameFinished()
+                viewModel.onGameFinishComplete()
+            }
         })
 
         return binding.root
